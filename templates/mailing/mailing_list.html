@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Рассылки{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Рассылки</h1>
+    <a href="{% url 'mailing:mailing_create' %}" class="btn btn-primary">Создать рассылку</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Тема письма</th>
+            <th>Начало</th>
+            <th>Окончание</th>
+            <th>Статус</th>
+            <th>Активна</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for mailing in mailings %}
+        <tr>
+            <td>{{ mailing.id }}</td>
+            <td>{{ mailing.message.subject }}</td>
+            <td>{{ mailing.start_time|date:"d.m.Y H:i" }}</td>
+            <td>{{ mailing.end_time|date:"d.m.Y H:i" }}</td>
+            <td>{{ mailing.get_status_display }}</td>
+            <td>{% if mailing.is_active %}✅{% else %}❌{% endif %}</td>
+            <td>
+                <a href="{% url 'mailing:mailing_detail' mailing.pk %}" class="btn btn-sm btn-info">Просмотр</a>
+                <a href="{% url 'mailing:mailing_update' mailing.pk %}" class="btn btn-sm btn-warning">Изменить</a>
+                <a href="{% url 'mailing:mailing_delete' mailing.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                <a href="{% url 'mailing:mailing_run' mailing.pk %}" class="btn btn-sm btn-success">Запустить</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">Рассылок пока нет.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

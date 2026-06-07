@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Рассылка #{{ object.id }}{% endblock %}
+
+{% block content %}
+<h1>Рассылка #{{ object.id }}</h1>
+<p><strong>Тема письма:</strong> {{ object.message.subject }}</p>
+<p><strong>Тело письма:</strong></p>
+<div class="border p-3 mb-3">{{ object.message.body|linebreaks }}</div>
+<p><strong>Дата начала:</strong> {{ object.start_time|date:"d.m.Y H:i" }}</p>
+<p><strong>Дата окончания:</strong> {{ object.end_time|date:"d.m.Y H:i" }}</p>
+<p><strong>Статус:</strong> {{ object.get_status_display }}</p>
+<p><strong>Активна:</strong> {% if object.is_active %}Да{% else %}Нет{% endif %}</p>
+<p><strong>Получатели:</strong></p>
+<ul>
+    {% for client in object.recipients.all %}
+        <li>{{ client.full_name }} ({{ client.email }})</li>
+    {% empty %}
+        <li>Нет получателей</li>
+    {% endfor %}
+</ul>
+
+<h3>Попытки отправки</h3>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th>Время</th>
+            <th>Получатель</th>
+            <th>Статус</th>
+            <th>Ответ сервера</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for attempt in object.attempts.all %}
+        <tr>
+            <td>{{ attempt.attempt_time|date:"d.m.Y H:i:s" }}</td>
+            <td>{% if attempt.client %}{{ attempt.client.full_name }}{% else %}—{% endif %}</td>
+            <td>{% if attempt.status == 'success' %}✅ Успешно{% else %}❌ Не успешно{% endif %}</td>
+            <td>{{ attempt.server_response|truncatechars:100 }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">Попыток пока нет.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'mailing:mailing_list' %}" class="btn btn-secondary">Назад</a>
+<a href="{% url 'mailing:mailing_run' object.pk %}" class="btn btn-success">Запустить сейчас</a>
+{% endblock %}
