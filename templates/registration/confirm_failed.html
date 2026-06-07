@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}Ошибка подтверждения{% endblock %}
+{% block content %}
+<h2>Ошибка подтверждения email</h2>
+<p>Ссылка недействительна или истекла.</p>
+<a href="{% url 'users:register' %}" class="btn btn-primary">Зарегистрироваться заново</a>
+{% endblock %}
